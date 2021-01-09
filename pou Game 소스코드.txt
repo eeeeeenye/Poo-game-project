@@ -1,0 +1,629 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <windows.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define ageMax 10
+#define affectionMax 100
+#define countof(A) (sizeof(A)/sizeof(A[0]))
+//주파수(도레미파솔라시도)
+#define Do 262
+#define REA 293
+#define Mi 329
+#define Pa 349
+#define Sol 392
+#define Ra 440
+#define Si 494
+#define HighDO 523
+#define HighRea 587
+#define HighMi 659
+#define HighPa 698
+#define HighSol 784
+#define HighRa 880
+
+
+//화면출력도구
+void InputFeature(int a);
+void Fullheart();
+void Menu(char z[], int* a, int* b, int* d);
+void lineF(int i);
+//메뉴에 있는 기능 구현
+int Food();
+void songs(int i);
+void soundLoop(int a, int b);
+void Colleague(int z);
+void GameDescription(int i);
+
+FILE* fp;
+
+void gotoxy(int x, int y) { //콘솔창의 커서 옮기기
+    COORD CursorPosition = { x,y }; // 헤더파일에 있는 구조체
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), CursorPosition); // 커서 옮기기 (좌표축을 이용해서)
+}
+
+
+void main() {
+    char Start[5];
+    char name[30];
+    int i, count = 0;
+    static int age;
+    static int affection;
+    static int colornum;
+
+    fp = fopen("C:\\mytemp\\name&age&affection.txt", "r");
+
+    if (fp == NULL) {
+        printf(". . . .error . . . .");
+        exit(1);
+    }
+    while (!feof(fp)) { // 메모장에 있는 정보를 변수에 대입
+        fscanf(fp, "%s %d %d %d", name, &age, &affection, &colornum); //최종완성 후 주석 풀 것
+    }
+
+    fclose(fp);
+
+
+
+    while (1) {
+        gets(Start);
+        Sleep(1000);
+        system("cls");
+        system("color F5"); // 콘솔창과 글씨를 전체적으로 변경
+        Sleep(1000);
+        lineF(1);
+
+        if (affection == 30 && count == 0) { // 애정도가 30이고 count가 0일 때 실행
+            Fullheart();
+            count++;
+        }
+
+        if (age == 0 && strcmp(Start, "start") == 0) { // 문자열 비교
+            printf(" \t   P o u Game !  (EASY)\n");
+            lineF(1);
+            printf("\n");
+            InputFeature(age);
+            printf("\n\n");
+            printf("***************************************************\n");
+            printf("Give a name : ");
+            gets(name);
+        }
+        else {
+            lineF(1);
+            printf(". . . . . .Loding . . . . . . . . . \n");
+            GameDescription(rand() % 3); //만들어놓은 3가지 텍스트 중 하나를 출력한다
+            lineF(1);
+        }
+        Sleep(4000);
+        system("cls");
+
+        if (colornum != 0) {
+
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colornum | (15 << 4)); // 콘솔창에 글씨를 출력할 때 텍스트배경은 흰색 글씨색은 colornum이 담은 숫자색으로 변한다.
+
+        }
+
+        Menu(name, &age, &affection, &colornum);
+
+
+    }
+}
+
+
+
+void InputFeature(int a) { //pou의 나이별 형상들 (age)
+    int i;
+    char p[][1][50] = { {"       ┏━━┓     ┏━━┓                  "},{ "   ┏━━━┃■┃━━━━━┃■┃━━━┓   " },{"   ┃   ┗━━┛     ┗━━┛   ┃          "},
+    {"   ┃                   ┃                  "},{"   ┃    ┗━━━━━━━━━┛    ┃       "},{"   ┃                   ┃                  "}
+ ,{"   ┗━━━━━━━━━━━━━━━━━━━┛"} };
+    char jj[][50] = { {"   ┃     //////////    ┃                  " },{"   ┃  ( ┗━━━━━━━━━┛ )  ┃       "} };
+
+    for (i = 0; i < countof(p); i++) {
+
+        if (5 <= a && a < 8) {
+            strcpy(&p[4], jj[1]); // strcpy를 사용해서 배열안의 내용 수정
+        }
+        else if (a == ageMax) {
+            strcpy(&p[3], jj[0]);
+            strcpy(&p[4], jj[1]);
+        }
+        printf("%s\n", p[i]);
+
+
+    }
+
+
+
+}
+
+
+void Fullheart() {  //attraction 30이 되었을 경우에 나타나는 화면
+    int i, j;
+
+    for (i = 4; i < 10; i += 2) { // 하트에서 중심전까지(별이 가장 많아지는 지점전)
+        for (j = 0; j <= (10 - i); j++) { // 10 - i에 해당하는 값까지 첫번째 공백을 출력 이는 행마다 별의 수를 줄이기 위함
+            printf(" ");
+            Sleep(10);
+        }
+        for (j = 0; j <= i * 2; j++) { 
+            printf("*");
+            Sleep(10);
+        }
+        for (j = 0; j <= (10 - i) * 2; j++) { // 두번째 공백
+            printf(" ");
+            Sleep(10);
+        }
+        for (j = 0; j <= i * 2; j++) { //개행문자가 없으므로 한줄에 쓰여진
+            printf("*");
+            Sleep(10);
+        }
+        printf("\n");
+        Sleep(10);
+    }
+    for (i = 20; i >= 0; i -= 2) { // 역피라미드
+        for (j = 0; j <= 20 - i; j++) {
+            printf(" ");
+            Sleep(10);
+        }
+        for (j = 0; j <= i * 2; j++) {
+            printf("*");
+            Sleep(10);
+        }
+        printf("\n");
+    }
+
+
+
+}
+
+
+void Menu(char z[], int* a, int* b, int* d) {
+    int i, j = 0, p;
+    static int count = 0;
+    fp = fopen("C:\\mytemp\\name&age&affection.txt", "w");// 이름도 함께 age와 affection값 기록
+
+    printf("☆name : %s\n", z);
+    printf("☆age : %d  \n☆affection : %d\n", *a, *b);
+
+    InputFeature(*a);
+
+    if (*b >= affectionMax) { // 애정도가 max에 도달했을 때
+        while (1) {
+            for (i = 0; i < 20; i++) {
+                gotoxy(14 + i, 2); //커서이동
+                printf("♥");
+                Sleep(50);
+            }
+            j++;
+            if (j == 3) {
+                gotoxy(36, 2);
+                printf("Full affection");
+                gotoxy(0, 10);
+                break;
+            }
+
+        }
+    }
+
+    printf("===========================================================\n");
+    printf("1) eat \t 2) singing \t 3) pou! \t4) end \n"); //애정도를 높이는 메뉴판
+    printf("===========================================================\n");
+    printf("---------Enter the number------------\n");
+    scanf_s("%d", &i);
+
+    switch (i) {
+    case 1:
+        if (count == 0) {
+            *d = Food();
+            *b += 5;
+            count++;
+        }
+        else {
+            printf("횟수초과!!!!!!!!");
+        }
+        break;
+    case 2:
+        srand(time(NULL));
+        j = rand() % 3; //랜덤의 수를 추출
+        songs(j + 1);
+        *b += 2;
+        break;
+    case 3:
+        system("cls");
+        srand(time(NULL));
+        Colleague(rand() % 4); //랜덤으로 친구들을 불러냄
+        *b += 1;
+        break;
+    case 4:
+        if (*a >= ageMax) { //나이가 10이 되었을 때
+            system("cls");
+            gotoxy(0, 10);
+            lineF(2);
+            lineF(2);
+            gotoxy(40, 13);
+            printf("Thank you for rasing me up!!\n");
+            gotoxy(40, 14);
+            printf("I'm leaving..\n");
+            gotoxy(0, 13);
+            InputFeature(*a);
+            lineF(2);
+            lineF(2);
+            gotoxy(0, 40);
+            fprintf(fp, "%s \t %d \t %d\t %d", "null", 0, 0, 0);
+        }
+        else {
+            *a += 1;
+            fprintf(fp, "%s \t %d \t %d\t %d", z, *a, *b, *d);
+        }
+        fclose(fp);
+        exit(1);
+    default:
+        printf("잘못입력하셨습니다.");
+        exit(1);
+    }
+}
+
+void lineF(int i) {
+    int j;
+    if (i == 1) {
+        for (j = 0; j < 25; j++) {
+            if (j == 24) {
+                printf("□\n");
+            }
+            else {
+                printf("□");
+            }
+        }
+
+    }
+    else if (i == 2) {
+        for (j = 0; j < 25; j++) {
+            printf("□");
+        }
+    }
+
+}
+
+int Food() { //음식정보 저장
+    char foodName[][2][4] = { {"M","7"},{"W","13"},{"O","6"},{"B","1"},{"N","4"},
+       {"S","12"},{"L","14"},{"R","6"},{"SO","3"} };
+    char Input[8];
+    int z, num;
+
+    printf("우유(M)  물(W)  오렌지주스(O)  블루베리(B)  라면(N) \n 레몬(L)  딸기케이크(S)  오렌지(R)  소보로빵(SO)\n ");
+    printf("Keyword : ");
+    scanf("%s", Input);
+    printf("%s", Input);
+    for (z = 0; z < countof(foodName); z++) {
+        if (strcmp(foodName[z][0], Input) == 0) {
+            num = atoi(foodName[z][1]); // SetConsoleTextAttribute함수에 대입할 숫자
+            return num;
+        }
+    }
+
+}
+
+void songs(int i) {
+    int y;
+
+    switch (i) { 
+    case 1: //사랑을 했다
+        gotoxy(30, 3);
+        printf("사랑을 했다~");
+        printf("~♪~♩~");
+        Beep(Ra, 400);
+        Beep(Sol, 400);
+        Beep(Pa, 400);
+        Beep(Ra, 400);
+        Beep(HighDO, 1000);
+
+        printf("우리가 만나~");
+        gotoxy(30, 6);
+        printf("~♩♪♬~♩~");
+        Beep(Ra, 400);
+        Beep(Sol, 400);
+        Beep(Pa, 400);
+        Beep(Ra, 400);
+        Beep(Sol, 1000);
+
+        printf("지우지 못할 추억이 됐다~");
+        gotoxy(30, 8);
+        printf("~♬~♩~");
+        Beep(Ra, 400);
+        Beep(Sol, 400);
+        Beep(Pa, 400);
+        soundLoop(Sol, 2);
+        Beep(Pa, 400);
+        Beep(Sol, 400);
+        Beep(Pa, 400);
+        Beep(Ra, 400);
+        Beep(Pa, 1000);
+        Sleep(1000);
+
+        break;
+    case 2: //작은별
+        gotoxy(30, 3);
+        printf("반짝 반짝 작은별~");
+        printf("~♪~♩~");
+        printf("아름답게 비추네~");
+        soundLoop(HighDO, 1);
+        soundLoop(HighSol, 1);
+        soundLoop(HighRa, 1);
+        Beep(HighSol, 500);
+
+        soundLoop(HighPa, 1);
+        soundLoop(HighMi, 1);
+        soundLoop(HighRea, 1);
+        Beep(HighDO, 500);
+
+
+        gotoxy(30, 6);
+        printf("동쪽하늘에서도 서쪽하늘에서도~");
+        printf("~♩♪♬~♩~");
+        for (y = 0; y < 2; y++) {
+            soundLoop(HighSol, 1);
+            soundLoop(HighPa, 1);
+            soundLoop(HighMi, 1);
+            Beep(HighRea, 500);
+        }
+
+        soundLoop(HighDO, 1);
+        soundLoop(HighSol, 1);
+        soundLoop(HighRa, 1);
+        Beep(HighSol, 500);
+
+
+        soundLoop(HighPa, 1);
+        soundLoop(HighMi, 1);
+        soundLoop(HighRea, 1);
+        Beep(HighDO, 500);
+        printf("아름답게 비추네~");
+        gotoxy(30, 8);
+        printf("~♬~♩~");
+        Sleep(1000);
+
+        break;
+    case 3: //진또배기
+        soundLoop(Mi, 1);
+        soundLoop(Sol, 1);
+        soundLoop(Ra, 1);
+        soundLoop(HighDO, 1);
+        soundLoop(HighRea, 1);
+        soundLoop(HighMi, 1);
+        soundLoop(HighRea, 1);
+        soundLoop(HighDO, 1);
+        Beep(HighRea, 300);
+        Beep(HighDO, 300);
+        Beep(Ra, 300);
+        Beep(Ra, 500);
+        Sleep(1000);
+
+        Beep(Sol, 300);
+        soundLoop(HighRa, 1);
+        Sleep(1000);
+
+        soundLoop(HighMi, 3);
+        soundLoop(HighMi, 1);
+        Sleep(500);
+
+        Beep(HighSol, 400);
+        Beep(HighMi, 400);
+        Beep(HighRea, 300);
+        soundLoop(HighMi, 1);
+
+        soundLoop(HighRea, 1);
+        Sleep(500);
+
+        Beep(HighDO, 300);
+        Beep(HighRea, 300);
+        Beep(HighMi, 300);
+        Beep(HighRea, 300);
+        Beep(HighDO, 300);
+
+        Beep(Ra, 300);
+        Beep(Sol, 300);
+        soundLoop(Mi, 1);
+        Sleep(500);
+
+        Beep(Ra, 300);
+        Beep(Sol, 300);
+        soundLoop(Ra, 1);
+        gotoxy(30, 3);
+        printf("~♬~♩~");
+        printf("진또배기!");
+        Sleep(500);
+
+
+        Beep(HighDO, 300);
+        Beep(Ra, 300);
+        soundLoop(HighDO, 1);
+        gotoxy(30, 5);
+        printf("~♬~♩~");
+        printf("진또배기!");
+        Sleep(500);
+
+        Beep(HighRea, 1);
+        soundLoop(HighMi, 3);
+        Beep(HighMi, 1000);
+        Beep(HighMi, 1000);
+        gotoxy(30, 8);
+        printf("~♬~♩~");
+        printf("진또배기~~");
+        Sleep(1000);
+        break;
+
+
+    }
+}
+
+void soundLoop(int a, int b) { //반복되는 음을 반복출력
+    int i;
+    if (b == 1) {
+        for (i = 0; i < 2; i++) {
+            Beep(a, 300);
+
+        }
+    }
+    else if (b == 2) {
+        for (i = 0; i < 2; i++) {
+            Beep(a, 400);
+        }
+    }
+    else if (b == 3) {
+        for (i = 0; i < 2; i++) {
+            Beep(a, 500);
+        }
+    }
+
+}
+
+void Colleague(int z) {
+    int i, j;
+    char pcolleague[][1][48] = { {"     ┏━━━━━━━━━━┓     "},{"     ┃┏━━┓  ┏━━┓┃     "},{"   ┏━━┃■┃━━┃■┃━━┓   "},{"   ┃  ┗━━┛  ┗━━┛  ┃   "}
+       ,{"┏━━┗━    ┗━━┛    ━┛━━┓ "},{"┃                    ┃     "},{"┗━━━━━━━━━━━━━━━━━━━━┛"} };
+    char pp[][40] = { {"┏━━┗━     ∑     ━┛━━┓ " },{"     ┏━━━━┻┻┻━━━┓     "},{"   ┏━━┃♥┃━━┃♥┃━━┓    "},{"     ┏━━━☆★━━━┓     "} };
+
+
+    Sleep(500);
+    system("cls");
+
+    switch (z) { //번호마다 다른 캐릭터를 출력함
+    case 0:
+        Beep(Do, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            gotoxy(10, 10 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+
+        Sleep(300);
+        gotoxy(10, 20);
+        printf("O:… O:… ");
+
+        Beep(Pa, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[0], pp[1]);
+            gotoxy(50, 5 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+
+        Sleep(300);
+
+        gotoxy(35, 10);
+        printf(" O:… O:…");
+
+
+        Beep(REA, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[4], pp[0]);
+            gotoxy(30, 20 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+
+        gotoxy(80, 10);
+        printf(" O:… O:…");
+
+        Sleep(300);
+
+        Beep(Mi, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[2], pp[2]);
+            strcpy(&pcolleague[0], pp[3]);
+            gotoxy(70, 15 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+
+        gotoxy(50, 15);
+        printf("O:… O:… ");
+        break;
+    case 1:
+        Beep(Pa, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[2], pp[2]);
+            gotoxy(40, 5 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+        gotoxy(50, 3);
+        printf("O:… O:… ");
+        break;
+
+    case 2:
+        Beep(REA, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[4], pp[0]);
+            strcpy(&pcolleague[0], pp[1]);
+            gotoxy(30, 5 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+        gotoxy(30, 19);
+        printf("O:… O:… ");
+        break;
+    case 3:
+        Beep(HighRea, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[4], pp[0]);
+            gotoxy(30, 10 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+        gotoxy(30, 19);
+        printf("O:… O:… ");
+
+        Sleep(400);
+        Beep(HighMi, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[2], pp[2]);
+            strcpy(&pcolleague[4], pp[0]);
+            gotoxy(70, 5 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+        gotoxy(70, 13);
+        printf("O:… O:… ");
+        break;
+    case 4:
+        Beep(HighMi, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[2], pp[2]);
+            strcpy(&pcolleague[0], pp[1]);
+            gotoxy(40, 5 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+        gotoxy(40, 3);
+        printf("O:… O:… ");
+
+        Beep(HighPa, 400);
+        for (j = 0; j < countof(pcolleague); j++) {
+            strcpy(&pcolleague[4], pp[0]);
+            strcpy(&pcolleague[0], pp[3]);
+            gotoxy(80, 10 + j);
+            printf("%s\n", pcolleague[j]);
+        }
+        gotoxy(80, 7);
+        printf("O:… O:… ");
+        break;
+    }
+
+
+    Sleep(2000);
+
+}
+
+void GameDescription(int i) {
+
+    if (i == 1) {
+        printf(". . . . . . . . . . . . . . .  . . . . \n");
+        printf(". . . . . . Find 3songs title. . . . . \n");
+        printf(". . . . . . . . . . . . . . .  . . . . \n");
+    }
+    else if (i == 2) {
+        printf(". . . . . . . . . . . . . . .  . . . . \n");
+        printf(". . . . . . Food changes color. . . . . \n");
+        printf(". . . . . . . . . . . . . . .  . . . . \n");
+    }
+    else {
+        printf(". . . . . . . . . . . . . . .  . . . . \n");
+        printf(". . . . . . How many friends. . . . . \n");
+        printf(". . . . . . . . . . . . . . .  . . . . \n");
+    }
+
+
+}
